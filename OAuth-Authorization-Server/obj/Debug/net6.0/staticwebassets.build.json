@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "tGrkyJ510JcMAUJMT59qfx+tByrzd2T72yW2wrXRnf8=",
+  "Source": "OAuth-Authorization-Server",
+  "BasePath": "_content/OAuth-Authorization-Server",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

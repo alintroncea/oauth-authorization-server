@@ -18,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 // Setup authorization.
 builder.Services.AddAuthorization(options =>
 {
@@ -256,7 +257,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => "Hello World!!");
 
 app.Run();
 

@@ -12,7 +12,8 @@ using Newtonsoft.Json;
 using OAuth_Authorization_Server.Data;
 using OAuth_Authorization_Server.Helpers;
 using OAuth_Authorization_Server.Models;
-
+using OAuth_Authorization_Server.Services;
+using OAuth_Authorization_Server.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -44,6 +45,7 @@ var appSettings = appSettingsSection.Get<AppSettings>();
 
 // Configure JWT authentication.
 var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+
 builder.Services
     .AddAuthentication(configuration =>
     {
@@ -54,6 +56,16 @@ builder.Services
     {
         configuration.Events = new JwtBearerEvents
         {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Query.ContainsKey("access_token"))
+                {
+                    context.Token = context.Request.Query["access_token"];
+                }
+
+                return Task.CompletedTask;
+            },
+
             OnTokenValidated = context =>
             {
                 var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
@@ -84,12 +96,15 @@ builder.Services
         };
         configuration.RequireHttpsMetadata = false;
         configuration.SaveToken = true;
-        configuration.TokenValidationParameters = new TokenValidationParameters
+        configuration.TokenValidationParameters = new TokenValidationParameters()
         {
-            ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = false,
-            ValidateAudience = false
+            SaveSigninToken = true,
+            ValidateIssuer = true,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidIssuer = "alin.auth.com",
+            ClockSkew = TimeSpan.Zero
         };
     })
     .AddCookie();
@@ -145,6 +160,7 @@ builder.Services.AddLocalization();
 // Singleton objects are the same for every object and every request.
 builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
 builder.Services.AddScoped<IAuthHelper, AuthHelper>();
+builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 //builder.Services.AddScoped<IUserService, UserService>();
 //builder.Services.AddScoped<IEmailService, EmailService>();
 
@@ -184,7 +200,9 @@ if (db == null || passwordHelper == null) throw new ApplicationException("Cannot
 
 // Migrate any database changes on startup (includes initial database creation).
 db.Database.Migrate();
-if (db.Users.FirstOrDefault(x => x.Username == appSettings.AdminUsername) == null)
+
+#region Seeding User and Role
+if (db.Users.FirstOrDefault(x => x.Username == appSettings.AdminUsername) is null)
 {
     var (passwordHash, passwordSalt) = passwordHelper.CreateHash(appSettings.AdminPassword);
 
@@ -217,6 +235,36 @@ if (db.Users.FirstOrDefault(x => x.Username == appSettings.AdminUsername) == nul
 
     db.SaveChanges();
 }
+#endregion
+
+#region Seeding OAuthClients with Scopes
+
+if (db.OAuthClients.FirstOrDefault(o => o.ClientId.Equals(appSettings.ClientId)) is null)
+{
+    var client = new OAuthClient
+    {
+        ClientSecret = appSettings.Secret,
+        ClientId = appSettings.ClientId,
+        AppName = appSettings.Name,
+        FallbackUri = appSettings.CallbackPath,
+        Website = appSettings.WebsiteURL,
+        OAuthScopes = new List<OAuthScope>
+                        {
+                            new OAuthScope
+                            {
+                                Name = "user"
+                            },
+                            new OAuthScope
+                            {
+                                Name = "name"
+                            }
+                        },
+    };
+
+    db.OAuthClients.Add(client);
+    db.SaveChanges();
+}
+#endregion
 
 //// The localization middleware must be configured before
 //// any middleware which might check the request culture.
@@ -243,12 +291,12 @@ app.UseCors(configuration => configuration.AllowAnyOrigin().AllowAnyMethod().All
 app.UseAuthentication();
 app.UseAuthorization();
 
-//app.UseEndpoints(endpoints =>
-//{
-//    // endpoints.MapControllers();
-//    endpoints.MapHealthChecks("/health");
-//}
-//);
+app.UseEndpoints(endpoints =>
+{
+    // endpoints.MapControllers();
+    endpoints.MapHealthChecks("/health");
+}
+);
 
 if (app.Environment.IsDevelopment())
 {

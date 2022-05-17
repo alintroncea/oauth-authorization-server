@@ -54,6 +54,61 @@ namespace OAuth_Authorization_Server.Migrations
                     b.ToTable("Logs");
                 });
 
+            modelBuilder.Entity("OAuth_Authorization_Server.Models.OAuthClient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("AppName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClientSecret")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FallbackUri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Website")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OAuthClients");
+                });
+
+            modelBuilder.Entity("OAuth_Authorization_Server.Models.OAuthScope", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OAuthClientId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OAuthClientId");
+
+                    b.ToTable("OAuthScope");
+                });
+
             modelBuilder.Entity("OAuth_Authorization_Server.Models.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -132,6 +187,13 @@ namespace OAuth_Authorization_Server.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("OAuth_Authorization_Server.Models.OAuthScope", b =>
+                {
+                    b.HasOne("OAuth_Authorization_Server.Models.OAuthClient", null)
+                        .WithMany("OAuthScopes")
+                        .HasForeignKey("OAuthClientId");
+                });
+
             modelBuilder.Entity("OAuth_Authorization_Server.Models.User", b =>
                 {
                     b.HasOne("OAuth_Authorization_Server.Models.Role", "Role")
@@ -141,6 +203,11 @@ namespace OAuth_Authorization_Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("OAuth_Authorization_Server.Models.OAuthClient", b =>
+                {
+                    b.Navigation("OAuthScopes");
                 });
 
             modelBuilder.Entity("OAuth_Authorization_Server.Models.Role", b =>

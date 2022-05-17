@@ -54,6 +54,9 @@ public class AppDbContext : DbContext
     /// </value>
     public DbSet<Log> Logs { get; set; }
 
+    public DbSet<OAuthClient> OAuthClients { get; set; }
+    public DbSet<OAuthScope> OAuthScope { get; set; }
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

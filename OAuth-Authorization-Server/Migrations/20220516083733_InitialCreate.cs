@@ -27,6 +27,23 @@ namespace OAuth_Authorization_Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OAuthClients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ClientSecret = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AppName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Website = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FallbackUri = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OAuthClients", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
@@ -37,6 +54,25 @@ namespace OAuth_Authorization_Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OAuthScope",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OAuthClientId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OAuthScope", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OAuthScope_OAuthClients_OAuthClientId",
+                        column: x => x.OAuthClientId,
+                        principalTable: "OAuthClients",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -68,6 +104,11 @@ namespace OAuth_Authorization_Server.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_OAuthScope_OAuthClientId",
+                table: "OAuthScope",
+                column: "OAuthClientId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Roles_Name",
                 table: "Roles",
                 column: "Name",
@@ -95,7 +136,13 @@ namespace OAuth_Authorization_Server.Migrations
                 name: "Logs");
 
             migrationBuilder.DropTable(
+                name: "OAuthScope");
+
+            migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "OAuthClients");
 
             migrationBuilder.DropTable(
                 name: "Roles");

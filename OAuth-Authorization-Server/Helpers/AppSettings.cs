@@ -13,13 +13,11 @@ public class AppSettings
     /// </value>
     public string Secret { get; set; }
 
-    /// <summary>
-    /// Gets or sets the SendGrid API key.
-    /// </summary>
-    /// <value>
-    /// The SendGrid API key.
-    /// </value>
-    public string SendGridApiKey { get; set; }
+    public string WebsiteURL { get; set; }
+
+    public string AuthorizationEndpoint { get; set; }
+
+    public string TokenEndpoint { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the WebAPI.
@@ -82,4 +80,7 @@ public class AppSettings
     /// </value>
     public string AdminPassword { get; set; }
 
+    public string ClientId { get; set; }
+
+    public string CallbackPath { get; set; }
 }

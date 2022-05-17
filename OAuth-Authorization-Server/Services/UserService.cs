@@ -112,17 +112,19 @@ public class UserService : IUserService
     #region Private helper method
     private string CreateToken(string userId)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, userId)}),
-            Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256Signature)
-        };
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+        //var tokenHandler = new JwtSecurityTokenHandler();
+        //var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+        //var tokenDescriptor = new SecurityTokenDescriptor
+        //{
+        //    Subject = new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, userId)}),
+        //    Expires = DateTime.UtcNow.AddDays(7),
+        //    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+        //        SecurityAlgorithms.HmacSha256Signature)
+        //};
+        //var token = tokenHandler.CreateToken(tokenDescriptor);
+        //return tokenHandler.WriteToken(token);
+
+        return default;
     }
 
     #endregion

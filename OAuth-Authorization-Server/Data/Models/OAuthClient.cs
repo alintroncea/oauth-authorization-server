@@ -11,6 +11,7 @@
         public string AppName { get; set; }
         public string Website { get; set; }
         public string FallbackUri { get; set; }
+        public string CurrentState { get; set; }
         public ICollection<OAuthScope> OAuthScopes { get; set; }
     }
 

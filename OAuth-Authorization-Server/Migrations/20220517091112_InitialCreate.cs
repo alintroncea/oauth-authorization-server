@@ -57,7 +57,7 @@ namespace OAuth_Authorization_Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OAuthScope",
+                name: "OAuthScopes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -67,9 +67,9 @@ namespace OAuth_Authorization_Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OAuthScope", x => x.Id);
+                    table.PrimaryKey("PK_OAuthScopes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OAuthScope_OAuthClients_OAuthClientId",
+                        name: "FK_OAuthScopes_OAuthClients_OAuthClientId",
                         column: x => x.OAuthClientId,
                         principalTable: "OAuthClients",
                         principalColumn: "Id");
@@ -104,8 +104,8 @@ namespace OAuth_Authorization_Server.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_OAuthScope_OAuthClientId",
-                table: "OAuthScope",
+                name: "IX_OAuthScopes_OAuthClientId",
+                table: "OAuthScopes",
                 column: "OAuthClientId");
 
             migrationBuilder.CreateIndex(
@@ -136,7 +136,7 @@ namespace OAuth_Authorization_Server.Migrations
                 name: "Logs");
 
             migrationBuilder.DropTable(
-                name: "OAuthScope");
+                name: "OAuthScopes");
 
             migrationBuilder.DropTable(
                 name: "Users");

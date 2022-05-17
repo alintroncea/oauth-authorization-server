@@ -1,8 +1,5 @@
 namespace OAuth_Authorization_Server.Services.DataTransferObjects.UserService;
 
-/// <summary>
-/// Data transfer object for the <see cref="IUserService.AuthenticateAsync"/> request.
-/// </summary>
 public class AuthenticateReqDto
 {
     /// <summary>

@@ -12,8 +12,8 @@ using OAuth_Authorization_Server.Data;
 namespace OAuth_Authorization_Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220516083733_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220517101452_AddCurrentStateToOAuthClients")]
+    partial class AddCurrentStateToOAuthClients
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -76,6 +76,10 @@ namespace OAuth_Authorization_Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CurrentState")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FallbackUri")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -108,7 +112,7 @@ namespace OAuth_Authorization_Server.Migrations
 
                     b.HasIndex("OAuthClientId");
 
-                    b.ToTable("OAuthScope");
+                    b.ToTable("OAuthScopes");
                 });
 
             modelBuilder.Entity("OAuth_Authorization_Server.Models.Role", b =>

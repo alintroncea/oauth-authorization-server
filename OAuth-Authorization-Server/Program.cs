@@ -23,6 +23,7 @@ builder.Services.AddSwaggerGen();
 // Setup authorization.
 builder.Services.AddAuthorization(options =>
 {
+
     options.AddPolicy("RequireAdminRole",
         policy => policy.RequireRole(OAuth_Authorization_Server.Models.EnumerationTypes.Role.Admin.ToString()));
 });
@@ -46,70 +47,94 @@ var appSettings = appSettingsSection.Get<AppSettings>();
 // Configure JWT authentication.
 var key = Encoding.ASCII.GetBytes(appSettings.Secret);
 
-builder.Services
-    .AddAuthentication(configuration =>
-    {
-        configuration.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        configuration.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(configuration =>
-    {
-        configuration.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                if (context.Request.Query.ContainsKey("access_token"))
-                {
-                    context.Token = context.Request.Query["access_token"];
-                }
+builder.Services.AddAuthentication(Opt =>
+         {
+             Opt.DefaultScheme = "_SID";
+             Opt.DefaultChallengeScheme = "OAuth2.0_Server";
 
-                return Task.CompletedTask;
-            },
+         })
+             .AddCookie("_SID", opt => { opt.Cookie.Name = "_SID"; })
+             .AddOAuth("OAuth2.0_Server", options =>
+             {
+                 options.CallbackPath = appSettings.CallbackPath;
+                 options.ClientId = appSettings.ClientId;
+                 options.ClientSecret = appSettings.Secret;
+                 options.AuthorizationEndpoint = appSettings.AuthorizationEndpoint;
+                 options.TokenEndpoint = appSettings.TokenEndpoint;
+                 options.Scope.Add("login");
+                 options.SaveTokens = true;
+                 options.UsePkce = true;
+                 options.Validate();
+             });
 
-            OnTokenValidated = context =>
-            {
-                var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
-                var userId = context.Principal?.Identity?.Name;
-                if (userId == null)
-                {
-                    context.Fail("Unauthorized");
-                    return Task.CompletedTask;
-                }
 
-                var user = db.Users.AsNoTracking().Include(x => x.Role)
-                    .FirstOrDefault(x => x.Id == Guid.Parse(userId));
+#region JWT Auth
+//builder.Services
+//    .AddAuthentication(configuration =>
+//    {
+//        configuration.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//        configuration.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//    })
+//    .AddJwtBearer(configuration =>
+//    {
+//        configuration.Events = new JwtBearerEvents
+//        {
+//            OnMessageReceived = context =>
+//            {
+//                if (context.Request.Query.ContainsKey("access_token"))
+//                {
+//                    context.Token = context.Request.Query["access_token"];
+//                }
 
-                if (user == null)
-                {
-                    context.Fail("Unauthorized");
-                    return Task.CompletedTask;
-                }
+//                return Task.CompletedTask;
+//            },
 
-                if (user.RoleId != null)
-                {
-                    var identity = context.Principal?.Identity as ClaimsIdentity;
-                    identity?.AddClaim(new Claim(ClaimTypes.Role, user.Role.Name));
-                }
+//            OnTokenValidated = context =>
+//            {
+//                var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+//                var userId = context.Principal?.Identity?.Name;
+//                if (userId == null)
+//                {
+//                    context.Fail("Unauthorized");
+//                    return Task.CompletedTask;
+//                }
 
-                return Task.CompletedTask;
-            }
-        };
-        configuration.RequireHttpsMetadata = false;
-        configuration.SaveToken = true;
-        configuration.TokenValidationParameters = new TokenValidationParameters()
-        {
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            SaveSigninToken = true,
-            ValidateIssuer = true,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ValidIssuer = "alin.auth.com",
-            ClockSkew = TimeSpan.Zero
-        };
-    })
-    .AddCookie();
+//                var user = db.Users.AsNoTracking().Include(x => x.Role)
+//                    .FirstOrDefault(x => x.Id == Guid.Parse(userId));
 
-// Add Swagger.
+//                if (user == null)
+//                {
+//                    context.Fail("Unauthorized");
+//                    return Task.CompletedTask;
+//                }
+
+//                if (user.RoleId != null)
+//                {
+//                    var identity = context.Principal?.Identity as ClaimsIdentity;
+//                    identity?.AddClaim(new Claim(ClaimTypes.Role, user.Role.Name));
+//                }
+
+//                return Task.CompletedTask;
+//            }
+//        };
+//        configuration.RequireHttpsMetadata = false;
+//        configuration.SaveToken = true;
+//        configuration.TokenValidationParameters = new TokenValidationParameters()
+//        {
+//            IssuerSigningKey = new SymmetricSecurityKey(key),
+//            SaveSigninToken = true,
+//            ValidateIssuer = true,
+//            ValidateAudience = false,
+//            ValidateLifetime = true,
+//            ValidIssuer = "ebrahim.auth.com",
+//            ClockSkew = TimeSpan.Zero
+//        };
+//    })
+//    .AddCookie();
+
+#endregion
+
+//Add Swagger.
 //builder.Services.AddSwaggerGen(configuration =>
 //{
 //    configuration.SwaggerDoc("v1", new OpenApiInfo { Title = "Web API", Version = "v1" });
@@ -248,16 +273,13 @@ if (db.OAuthClients.FirstOrDefault(o => o.ClientId.Equals(appSettings.ClientId))
         AppName = appSettings.Name,
         FallbackUri = appSettings.CallbackPath,
         Website = appSettings.WebsiteURL,
+        CurrentState = string.Empty,
         OAuthScopes = new List<OAuthScope>
                         {
                             new OAuthScope
                             {
-                                Name = "user"
+                                Name = "login"
                             },
-                            new OAuthScope
-                            {
-                                Name = "name"
-                            }
                         },
     };
 
@@ -295,6 +317,9 @@ app.UseEndpoints(endpoints =>
 {
     // endpoints.MapControllers();
     endpoints.MapHealthChecks("/health");
+    endpoints.MapControllerRoute(
+                  name: "default",
+                  pattern: "{controller=Home}/{action=Index}/{id?}");
 }
 );
 

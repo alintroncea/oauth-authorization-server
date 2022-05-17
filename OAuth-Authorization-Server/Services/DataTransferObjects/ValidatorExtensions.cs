@@ -64,24 +64,6 @@ public static class ValidatorExtensions
     }
 
     /// <summary>
-    /// Validates the family name.
-    /// </summary>
-    /// <typeparam name="T">The rule builder options.</typeparam>
-    /// <param name="ruleBuilderOptions">The rule builder options.</param>
-    /// <param name="l">The localizer.</param>
-    /// <returns>The rule builder options.</returns>
-    public static IRuleBuilderOptions<T, string> FamilyName<T>(this IRuleBuilder<T, string> ruleBuilderOptions,
-        IStringLocalizer l)
-    {
-        return ruleBuilderOptions
-            .NotEmpty().WithMessage(l["Family name cannot be empty."])
-            .MinimumLength(2)
-            .WithMessage(string.Format(l["Family name must be at least {0} characters long."], 2))
-            .MaximumLength(30)
-            .WithMessage(string.Format(l["Family name cannot be longer than {0} characters."], 30));
-    }
-
-    /// <summary>
     /// Validates the email.
     /// </summary>
     /// <typeparam name="T">The rule builder options.</typeparam>

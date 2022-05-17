@@ -1,20 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Projects\\OAuth-Authorization-Server\\OAuth-Authorization-Server\\OAuth-Authorization-Server.csproj": {}
+    "D:\\BT workstation\\OAuth-Authorization-Server\\OAuth-Authorization-Server\\OAuth-Authorization-Server.csproj": {}
   },
   "projects": {
-    "C:\\Projects\\OAuth-Authorization-Server\\OAuth-Authorization-Server\\OAuth-Authorization-Server.csproj": {
+    "D:\\BT workstation\\OAuth-Authorization-Server\\OAuth-Authorization-Server\\OAuth-Authorization-Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\OAuth-Authorization-Server\\OAuth-Authorization-Server\\OAuth-Authorization-Server.csproj",
+        "projectUniqueName": "D:\\BT workstation\\OAuth-Authorization-Server\\OAuth-Authorization-Server\\OAuth-Authorization-Server.csproj",
         "projectName": "OAuth-Authorization-Server",
-        "projectPath": "C:\\Projects\\OAuth-Authorization-Server\\OAuth-Authorization-Server\\OAuth-Authorization-Server.csproj",
-        "packagesPath": "C:\\Users\\Alin\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\OAuth-Authorization-Server\\OAuth-Authorization-Server\\obj\\",
+        "projectPath": "D:\\BT workstation\\OAuth-Authorization-Server\\OAuth-Authorization-Server\\OAuth-Authorization-Server.csproj",
+        "packagesPath": "C:\\Users\\desktop1\\.nuget\\packages\\",
+        "outputPath": "D:\\BT workstation\\OAuth-Authorization-Server\\OAuth-Authorization-Server\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Alin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\desktop1\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
